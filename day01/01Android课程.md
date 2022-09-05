@@ -1,4 +1,4 @@
-# 《移动端Android课程简介》
+# 《移动端Android课程简介》中软国际 企业讲师 路鹏
 
 ## 常用移动端操作系统介绍
 
@@ -44,9 +44,7 @@ Android 一词的本义指 **“机器人”**，同时也是**Google**于2007�
 
 Android一词最早出现于法国作家利尔亚当（Auguste Villiers de l'Isle-Adam）在1886年发表的科
 
-幻小说《未来夏娃》（
-
-L'ève future）中。他将外表像人的机器起名为Android。
+幻小说《未来夏娃》（L'ève future）中。他将外表像人的机器起名为Android。
 
 **1.2 Logo**
 
@@ -310,7 +308,17 @@ Android平台提供给第三方开发商一个十分宽泛、自由的环境，�
 
 Google服务。
 
-## 安卓JDK
+## JAVA - JDK
+
+检验版本
+
+```cmd
+java -version
+1.8.xxxx
+java
+
+javac
+```
 
 ## 安装AndroidStudio安卓开发工具
 
@@ -379,6 +387,12 @@ Automotive:汽车终端
 HelloWorld的启动界面 
 
 ##### 使用真实手机测试App，
+
+### 1.打开开发者模式
+
+### 2.打开USB调试
+
+### 3.打开USB安装（有些手机没有这个选项就不用管）
 
 该办法在实际开发中更为常见。由于模拟器本身跑在电脑上面，占用电脑的CPU和内存，会拖累电脑的运行速度；况且模拟器仅仅是模拟而已，无法完全验证App的所
 
@@ -513,7 +527,7 @@ androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
 ```
 
-### 配置文件AndroidManifest.xml
+### 清单文件AndroidManifest.xml
 
 ```xml
 <!-- activity节点指定了该App拥有的活动页面信息，其中拥有 android.intent.action.MAIN的activity说明它是入口页面 -->
@@ -539,258 +553,22 @@ androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
   
 
+# Android studio连接夜神模拟器
 
-## App的设计规范
+（1）运行夜神模拟器
 
-App将看得见的界面设计与看不见的代码逻辑区分开，然后利用XML标记描绘应用界面，同时使用Java代码书写程序逻辑，从而形成App前后端分离的设计规约，有利于提高App集成的灵活性。
+![在这里插入图片描述](https://img-blog.csdn.net/20181014195542547?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VuZ2VybGE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
-### 界面设计与代码逻辑
+（2）打开[命令行](https://so.csdn.net/so/search?q=命令行&spm=1001.2101.3001.7020)窗口
 
-手机的功能越来越强大，某种意义上相当于微型电脑，比如打开一个电商App，仿佛是在电脑上浏览网站。网站分为用户看得到的网页，以及用户看不到的Web后台；App也分为用户看得到的界面，以及用户看不到的App后台。虽然Android允许使用Java代码描绘界面，但不提倡这么做，推荐的做法是将界面设计从Java代码剥离出来，通过单独的XML文件定义界面布局，就像网站使用HTML文件定义网页那样。
+![在这里插入图片描述](https://img-blog.csdn.net/20181014200108611?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VuZ2VybGE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
-![image-20220901005729471](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220901005729471.png)
+3）打开到夜神安装目录（默认安装在D:\Program Files\Nox\bin）
 
-![image-20220901005745043](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220901005745043.png)
+![在这里插入图片描述](https://img-blog.csdn.net/20181014200328863?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VuZ2VybGE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
-把界面设计与代码逻辑分开，不仅参考了网站的Web前后端分离，还有下列几点好处。
+（4）执行命令：nox_adb.exe connect 127.0.0.1:62001，连接模拟器
 
-（1）使用XML文件描述App界面，可以很方便地在Android Studio上预览界面效果。比如新创建的App
+![在这里插入图片描述](https://img-blog.csdn.net/20181014200847618?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VuZ2VybGE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
-项目，默认首页布局为activity_main.xml，单击界面右上角的Design按钮，即可看到如图2-15所示的预
-
-览界面。
-
-如果XML文件修改了Hello World的文字内容，立刻就能在预览区域观看最新界面。倘若使用Java代码描
-
-绘界面，那么必须运行App才能看到App界面，无疑费时许多。
-
-（2）一个界面布局可以被多处代码复用，比如商城购物代码浏览商品图片，也能通过商品评价代码浏览商品图片。
-
-（3）一段Java代码也可能适配多个界面布局，比如手机有竖屏与横屏两种模式，默认情况App采用同一套布局
-
-### **利用****XML****标记描绘应用界面**
-
-```xml
-<TextView 
-          android:id="@+id/tv_hello" 
-          android:layout_width="wrap_content" 
-          android:layout_height="wrap_content" 
-          android:text="Hello World!" />
-```
-
-注意到TextView标签以“<”开头，以“/>”结尾，为何尾巴多了个斜杆呢？要是没有斜杆，以左右尖括号包
-
-裹标签名称，岂不更好？其实这是XML的标记规范，凡是XML标签都由标签头与标签尾组成，标签头以
-
-左右尖括号包裹标签名称，形如“”；标签尾在左尖括号后面插入斜杆，以此同标签头区分开，形如“”。标
-
-签头允许在标签名称后面添加各种属性取值，而标签尾不允许添加任何属性，因此上述TextView标签的
-
-完整XML定义是下面这样的：
-
-```xml
-<TextView 
-          android:id="@+id/tv_hello" 
-          android:layout_width="wrap_content" 
-          android:layout_height="wrap_content" 
-          android:text="Hello World!"></TextView>
-```
-
-考虑到TextView仅仅是个文本视图，其标签头和标签尾之间不会插入其他标记，所以合并它的标签头和标签尾，也就是让TextView标签以“/>”结尾，表示该标签到此为止。
-
-譬如下面是个XML文件的布局内容，里面包含了根节点、布局节点，以及控件节点：
-（chapter02\src\main\res\layout\activity_main.xml）
-
-```xml
- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-               android:layout_width="match_parent" 
-               android:layout_height="match_parent"> 
-     <!-- 这是个线性布局， match_parent意思是与上级视图保持一致--> 
-     <LinearLayout                                      
-                   android:layout_width="match_parent" 
-                   android:layout_height="match_parent"> 
-         <!-- 这是个文本视图，名字叫做tv_hello，显示的文字内容为“Hello World!” --> 
-         <TextView android:id="@+id/tv_hello" 
-                   android:layout_width="wrap_content" 
-                   android:layout_height="wrap_content" 
-                   android:text="Hello World!" /> 
-     </LinearLayout> 
-</LinearLayout>
-```
-
-（1）每个界面只有一个根节点，却可能有多个布局节点，也可能没有中间的布局节点，此时所有控件节
-
-点都挂在根节点下面。
-
-（2）根节点必须配备“xmlns:android="http://schemas.android.com/apk/res/android"”，表示指定
-
-XML内部的命名空间，有了这个命名空间，Android Studio会自动检查各节点的属性名称是否合法，如
-
-果不合法就提示报错。至于布局节点就不能再指定命名空间了。
-
-### **使用****Java****代码书写程序逻辑**
-
-在XML文件中定义界面布局，已经明确是可行的了，然而这只是静态界面，倘若要求在App运行时修改
-
-文字内容，该当如何是好？倘若是动态变更网页内容，还能在HTML文件中嵌入JavaScript代码，由js片
-
-段操作Web控件。但Android的XML文件仅仅是布局标记，不能再嵌入其他语言的代码了，也就是说，
-
-只靠XML文件自身无法动态刷新某个控件。
-
-XML固然表达不了复杂的业务逻辑，这副重担就得交给App后台的Java代码了。Android Studio每次创
-
-建新项目，除了生成默认的首页布局activity_main.xml之外，还会生成与其对应的代码文件
-
-MainActivity.java。赶紧打开MainActivity.java，看看里面有什么内容，该Java文件中MainActivity类的
-
-```java
-public class MainActivity extends AppCompatActivity { 
-	@Override protected void onCreate(Bundle savedInstanceState) { 
-        super.onCreate(savedInstanceState); 
-        setContentView(R.layout.activity_main); 
-    } 
-}
-//把文字内容改成中文
-public class MainActivity extends AppCompatActivity { 
-    @Override protected void onCreate(Bundle savedInstanceState) { 
-        super.onCreate(savedInstanceState); 
-        // 当前的页面布局采用的是res/layout/activity_main.xml 
-        setContentView(R.layout.activity_main); 
-        // 获取名叫tv_hello的TextView控件，注意添加导包语句import android.widget.TextView; 
-        TextView tv_hello = findViewById(R.id.tv_hello); 
-        // 设置TextView控件的文字内容 
-        tv_hello.setText("你好，世界"); 
-    } 
-}
-```
-
-### **App****的新建页面**
-
-#### 1.**创建****XML****文件**
-
-在Android Studio左上方找到项目结构图，右击res目录下面的layout，在右键菜单中依次选择New→XML→Layout XML File->activity_main2
-
-#### 2.**创建****Java****代码**
-
-在Android Studio左上方找到项目结构图右击java目录下面的包名com.zrgj.app-择New→Java Class->Main2Active
-
-```java
-public class Main2Activity extends AppCompatActivity { 
-    @Override protected void onCreate(Bundle savedInstanceState) { 
-        super.onCreate(savedInstanceState); setContentView(R.layout.activity_main2); 
-    } 
-}
-```
-
-#### 3.**页面配置**
-
-```xml
-<activity android:name=".Main2Activity"></activity>
-```
-
-### **快速生成页面源码**
-
-上一小节经过创建XML文件、创建Java代码、注册页面配置3个步骤，就算创建好了一个新页面，没想到
-
-区区一个页面也这么费事，怎样才能提高开发效率呢？其实Android Studio早已集成了快速创建页面的
-
-功能，只要一个对话框就能完成所有操作。
-
-###### 右键菜单中依次选择New→Activity→Empty Activity->Main3Activity
-
-### **跳到另一个页面**
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello MyApp!"
-        />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="跳转Activity2"/>
-</LinearLayout>
-```
-
-```java
-public class MainActivity extends AppCompatActivity {
-
-    @Override
-//    onCreate:生命周期
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        设置布局视图
-        setContentView(R.layout.activity_main);
-//        查找视图控件id
-        TextView tv = findViewById(R.id.tv);
-        tv.setText("您好！世界");
-
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, MainActive2.class);
-                startActivity(intent);
-            }
-        });
-    }
-}
-```
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello ActivityMain2!"
-        />
-</LinearLayout>
-```
-
-```java
-public class MainActivity2 extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-    }
-}
-```
-
-## **动手练习**
-
-请上机实验修改App工程的XML文件和Java代码，并使用真机调试App，主要步骤说明如下：
-
-（1）创建一个新的App项目。
-
-（2）修改项目级别的build.gradle，添加阿里云的仓库地址。
-
-（3）创建一个名为Main2Activity的新页面（含XML文件与Java代码）。
-
-（4）在该页面的XML文件中添加一个TextView标签，文本内容为“你好，世界！”。 
-
-（5）在MainActivity的Java代码中添加页面跳转代码，从当前页跳到Main2Activity。 
-
-（6）把App安装到手机上并运行，观察能否看到“你好，世界！”字样
-
+（5）若Android Studio运行项目时，没有连接上夜神模拟器，重启模拟器即可，重启夜神模拟器之后，再次运行项目，就有了
