@@ -23,6 +23,7 @@ new 》module》study03
 -  finish(); // 结束当前的活动页面
 
 ```xml
+new > activity > StartActivity 、 FinishActivity
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -232,8 +233,6 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
 ![image-20220914234527329](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220914234527329.png)
 
-示例，Activity3 设置为singleInstance，Activity1 和 Activity2 默认（standard），下图程序流程中，黄色的代表 Background 的Task，蓝色的代表 Foreground 的Task。返回时会先把 Foreground 的Task 中的 Activity 弹出，直到 Task 销毁，然后才将 Background的 Task 唤到前台，所以最后将Activity3 销毁之后，会直接退出应用。
-
 #### **动态设置启动模式**
 
 在上述所有情况，都是我们在Manifest中通过 launchMode 属性设置的，这个被称为静态设置，动态设置是通过 Java 代码设置的。
@@ -245,3 +244,170 @@ intent.setFlags();
 ```
 
 如果同时有动态和静态设置，那么动态的优先级更高。接下来我们来看一下如何动态的设置 Activity 启动模式。
+
+#### **在代码里面设置启动标志**
+
+###### 启动标志的取值说明如下： 
+
+-  Intent.FLAG_ACTIVITY_NEW_TASK：开辟一个新的任务栈 
+
+-  Intent.FLAG_ACTIVITY_SINGLE_TOP：当栈顶为待跳转的活动实例之时，则重用栈顶的实例 
+
+-  Intent.FLAG_ACTIVITY_CLEAR_TOP：当栈中存在待跳转的活动实例时，则重新创建一个新实例， 并清除原实例上方的所有实例 
+
+-  Intent.FLAG_ACTIVITY_NO_HISTORY：栈中不保存新启动的活动实例 
+
+-  Intent.FLAG_ACTIVITY_CLEAR_TASK：跳转到新页面时，栈中的原有实例都被清空 
+
+### 常见场景
+
+#### 不返回重复Activity
+
+new > activity > ModeFirstActivity、ModeTwoActivity
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转第二个页面"/>
+</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转第一个页面"/>
+</LinearLayout>
+```
+
+```java
+public class ModeFirstActivity extends AppCompatActivity implements View.OnClickListener {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_mode_first);
+        //        Alt + Enter + Make....
+        findViewById(R.id.btn_next).setOnClickListener(this);
+    }
+    @Override
+    public void onClick(View v) {
+        // 创建一个意图对象，准备跳到指定的活动页面
+        Intent intent = new Intent(this, ModeTwoActivity.class);
+        // 栈中存在待跳转的活动实例时，则重新创建该活动的实例，并清除原实例上方的所有实例
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+}
+public class ModeTwoActivity extends AppCompatActivity implements View.OnClickListener {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_mode_two);
+        //        Alt + Enter + Make....
+        findViewById(R.id.btn_next).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        // 创建一个意图对象，准备跳到指定的活动页面
+        Intent intent = new Intent(this, ModeFirstActivity.class);
+        // 栈中存在待跳转的活动实例时，则重新创建该活动的实例，并清除原实例上方的所有实例
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+}
+```
+
+#### 登录不返回登录页
+
+new > activity > LoginInputActivity、LoginSuccessActivity
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="这里是登录验证页面，此处省略了用户名和密码等输入框" />
+    <Button
+        android:id="@+id/btn_jump_success"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="跳到登录成功页面" />
+</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="这里是登录成功页面，登录成功之后不必返回登录验证页面。请按返回键观察看看" />
+    <Button
+        android:id="@+id/btn_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="返回"/>
+</LinearLayout>
+```
+
+```java
+public class LoginInputActivity extends AppCompatActivity implements View.OnClickListener {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login_input);
+        findViewById(R.id.btn_jump_success).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        // 创建一个意图对象，准备跳到指定的活动页面
+        Intent intent = new Intent(this, LoginSuccess.class);
+        // 设置启动标志：跳转到新页面时，栈中的原有实例都被清空，同时开辟新任务的活动栈
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+}
+public class LoginSuccess extends AppCompatActivity implements View.OnClickListener {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login_success);
+        findViewById(R.id.btn_back).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btn_back) {
+            // 结束当前的活动页面
+            finish();
+        }
+    }
+}
+```
+
+
+
