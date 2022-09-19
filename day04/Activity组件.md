@@ -409,5 +409,546 @@ public class LoginSuccess extends AppCompatActivity implements View.OnClickListe
 }
 ```
 
+### **显式****Intent****和隐式****Intent**
 
+###### Intent是各个组件之间信息沟通的桥梁，它用于Android各组件之间的通信，主要完成下 列工作： 
+
+-  标明本次通信请求从哪里来、到哪里去、要怎么走。 
+
+-  发起方携带本次通信需要的数据内容，接收方从收到的意图中解析数据。 
+
+-  发起方若想判断接收方的处理结果，意图就要负责让接收方传回应答的数据内容。
+
+###### **Intent****的组成部分** 
+
+![image-20220919204855836](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220919204855836.png)
+
+#### **显式****Intent**
+
+###### 显式Intent，直接指定来源活动与目标活动，属于精确匹配。它有三种构建方式： 
+
+-  在Intent的构造函数中指定。 
+
+-  调用意图对象的setClass方法指定。 
+
+-  调用意图对象的setComponent方法指定。 
+
+```java
+StartActivity
+@Override
+    public void onClick(View v) {
+//        1.在Intent的构造函数中指定
+//        Intent intent = new Intent(this, FinishActivity.class);
+//        2.调用意图对象的setClass方法指定
+        Intent intent = new Intent(); // 创建一个新意图
+//        // 设置意图要跳转的目标活动
+//        intent.setClass(this, FinishActivity.class);
+//        3.调用意图对象的setComponent方法指定
+        // 创建包含目标活动在内的组件名称对象
+        ComponentName component = new ComponentName(this, FinishActivity.class);
+        intent.setComponent(component); // 设置意图携带的组件信息
+        startActivity(intent);
+    }
+```
+
+#### **隐式****Intent** 
+
+###### 隐式Intent，没有明确指定要跳转的目标活动，只给出一个动作字符串让系统自动匹配， 属于模糊匹配。动作名称既可以通过setAction方法指定，也可以通过构造函数Intent(String action)直接生成意图对象。常见的系统动作如下表：
+
+![image-20220919205028320](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220919205028320.png)
+
+new > activity > ActionActivity
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <Button
+        android:id="@+id/btn_dial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="跳转到拨号页面"/>
+    <Button
+        android:id="@+id/btn_sms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="跳转到发短信页面"/>
+    <Button
+        android:id="@+id/btn_study02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="跳转到另一个应用"/>
+</LinearLayout>
+```
+
+```java
+public class ActionUriActivity extends AppCompatActivity implements View.OnClickListener {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_action_uri);
+        findViewById(R.id.btn_dial).setOnClickListener(this);
+        findViewById(R.id.btn_sms).setOnClickListener(this);
+        findViewById(R.id.btn_study02).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String phoneNumber = "10086";
+        Intent intent = new Intent();
+        switch (v.getId()){
+            case R.id.btn_dial:
+
+//                设置意图动作准备拨号
+                intent.setAction(Intent.ACTION_DIAL);
+//                声明一个拨号的Uri
+                Uri uri = Uri.parse("tel:" + phoneNumber);
+                intent.setData(uri);
+                startActivity(intent);
+                break;
+            case R.id.btn_sms:
+//                设置意图动作准备发短信
+                intent.setAction(Intent.ACTION_SENDTO);
+//                声明一个拨号的Uri
+                Uri uri2 = Uri.parse("smsto:" + phoneNumber);
+                intent.setData(uri2);
+                startActivity(intent);
+                break;
+            case R.id.btn_study02:
+//                设置意图动作准备跳转其他应用
+                intent.setAction("android.intent.action.CALCULATOR");
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivity(intent);
+                break;
+        }
+    }
+}
+```
+
+```xml
+study02 > AndroidManifest.xml
+<activity
+            android:name=".CalculatorActivity"
+<!--            exported:允许其他应用访问 -->
+            android:exported="true">
+<!--            桌面点图标启动-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+<!--            自定义其他打开启动方式-->
+            <intent-filter>
+                <action android:name="android.intent.action.CALCULATOR" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+```
+
+### **向下一个****Activity****发送数据** 
+
+###### Intent使用Bundle对象存放待传递的数据信息。 
+
+###### Bundle对象操作各类型数据的读写方法说明见下表。
+
+![image-20220919214214123](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220919214214123.png)
+
+**Bundle** 
+
+- 在代码中发送消息包裹，调用意图对象的putExtras方法，即可存入消息包裹。 
+
+- 在代码中接收消息包裹，调用意图对象的getExtras方法，即可取出消息包裹。 
+
+new > activity > SendActivity | ReceiveActivity
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="我是一个消息"
+        android:textSize="25sp"/>
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发送以上消息"/>
+</LinearLayout>
+```
+
+```xml
+public class SendActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView tv_msg;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_send);
+        tv_msg = findViewById(R.id.tv_msg);
+        findViewById(R.id.btn_send).setOnClickListener(this);
+    }
+    @Override
+    public void onClick(View v) {
+       Intent intent = new Intent(this, ReceiveActivity.class);
+//       创建一个新的包裹
+       Bundle bundle = new Bundle();
+       bundle.putString("time", Utils.getNowTime());
+       bundle.putString("content", tv_msg.getText().toString());
+//       包裹放入意图对象
+       intent.putExtras(bundle);
+       startActivity(intent);
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_receive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="接收包裹"
+        android:textSize="25sp"/>
+</LinearLayout>
+```
+
+```java
+public class ReceiveActivity extends AppCompatActivity {
+    private TextView tv_receive;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_receive);
+
+        tv_receive = findViewById(R.id.tv_receive);
+//        从上一个页面传来的意图中获取快递包裹
+        Bundle bundle = getIntent().getExtras();
+        String time = bundle.getString("time");
+        String content = bundle.getString("content");
+        String desc = String.format("收到消息:\n请求时间:%s\n请求内容:%s", time,content);
+        tv_receive.setText(desc);
+    }
+}
+```
+
+### **向上一个****Activity****返回数据**
+
+###### 处理下一个页面的应答数据，详细步骤说明如下： 
+
+-  上一个页面打包好请求数据，调用startActivityForResult方法执行跳转动作 
+
+-  下一个页面接收并解析请求数据，进行相应处理 
+
+-  下一个页面在返回上一个页面时，打包应答数据并调用setResult方法返回数据包裹 
+
+-  上一个页面重写方法onActivityResult，解析获得下一个页面的返回数据 
+
+new > activity > RequestActivity | ResponseActivity
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发送消息"
+        android:textSize="25sp"/>
+    <Button
+        android:id="@+id/btn_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="传送请求数据"/>
+    <TextView
+        android:id="@+id/tv_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="返回结果显示"
+        android:textSize="25sp"/>
+</LinearLayout>
+```
+
+```java
+public class RequestActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView tv_request;
+    private TextView tv_response;
+    private ActivityResultLauncher<Intent> register;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_request);
+
+        tv_request = findViewById(R.id.tv_request);
+        tv_response = findViewById(R.id.tv_response);
+        findViewById(R.id.btn_request).setOnClickListener(this);
+//        注册一个接收返回参数结果接收对象
+        register = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if( result != null){
+                    Intent intent = result.getData();
+                    if(intent != null && result.getResultCode() == Activity.RESULT_OK){
+                        Bundle bundle = intent.getExtras();
+                        String time = bundle.getString("time");
+                        String content = bundle.getString("content");
+                        String desc = String.format("收到返回消息:\n返回时间:%s\n返回内容:%s", time,content);
+                        tv_response.setText(desc);
+                    }
+                }
+            }
+        });
+//        }).var => ActivityResultLauncher<Intent> register =
+    }
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, ResponseActivity.class);
+//       创建一个新的包裹
+        Bundle bundle = new Bundle();
+        bundle.putString("time", Utils.getNowTime());
+        bundle.putString("content", tv_request.getText().toString());
+//       包裹放入意图对象
+        intent.putExtras(bundle);
+//        startActivityForResult 过时了
+        register.launch(intent);
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="显示接收消息"
+        android:textSize="25sp"/>
+    <Button
+        android:id="@+id/btn_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="返回数据"/>
+    <TextView
+        android:id="@+id/tv_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="带回去的数据"
+        android:textSize="25sp"/>
+</LinearLayout>
+```
+
+```java
+public class ResponseActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView tv_response;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_response);
+
+        TextView tv_request = findViewById(R.id.tv_request);
+        tv_response = findViewById(R.id.tv_response);
+//        获取从上一个页面传递过来的数据显示
+        Bundle bundle = getIntent().getExtras();
+        String time = bundle.getString("time");
+        String content = bundle.getString("content");
+        String desc = String.format("收到消息:\n请求时间:%s\n请求内容:%s", time, content);
+        tv_request.setText(desc);
+
+//        返回数据
+        findViewById(R.id.btn_response).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent();
+//       创建一个新的包裹
+        Bundle bundle = new Bundle();
+        bundle.putString("time", Utils.getNowTime());
+        bundle.putString("content", tv_response.getText().toString());
+//        包裹放入意图对象
+        intent.putExtras(bundle);
+//       回传数据 RESULT_OK表示处理成功
+        setResult(Activity.RESULT_OK, intent);
+//        结束活动
+        finish();
+    }
+}
+```
+
+### **利用元数据传递配置信息** 
+
+###### 元数据是一种描述其他数据的数据，它相当于描述固定活动的参数信息。 
+
+###### 在activity节点内部添加meta-data标签，通过属性name指定元数据的名称，通过属性value指定元数据的值。
+
+#### **在代码中获取元数据**
+
+###### 在Java代码中，获取元数据信息的步骤分为下列三步： 
+
+-  调用getPackageManager方法获得当前应用的包管理器； 
+
+-  调用包管理器的getActivityInfo方法获得当前活动的信息对象； 
+
+-  活动信息对象的metaData是Bundle包裹类型，调用包裹对象的getString即可获得指定名称的参数值； 
+
+new > activity > MetaActivity
+
+```xml
+<activity
+          android:name=".MetaActivity"
+          android:exported="true"
+          android:launchMode="standard">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+    
+    <meta-data android:name="email" android:value="邮件页面"/>
+</activity>
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"/>
+</LinearLayout>
+```
+
+```java
+public class MetaActivity extends AppCompatActivity {
+    private TextView tv_msg;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_meta);
+        tv_msg = findViewById(R.id.tv_msg);
+        showMetaData();
+    }
+    // 显示配置的元数据
+    private void showMetaData() {
+        try {
+            PackageManager pm = getPackageManager();
+            // 获取应用包管理器
+            // 从应用包管理器中获取当前的活动信息
+            ActivityInfo info = pm.getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
+            Bundle bundle = info.metaData;
+            // 获取活动附加的元数据信息
+            String value = bundle.getString("email");
+            // 从包裹中取出名叫weather的字符 串
+            tv_msg.setText("来自元数据信息：" + value);
+            // 在文本视图上显示文字
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### **给应用页面注册快捷方式**
+
+###### 元数据不仅能传递简单的字符串参数，还能传送更复杂的资源数据，比如支付宝的快捷方式菜单。
+
+![image-20220919232959983](C:\Users\15596\AppData\Roaming\Typora\typora-user-images\image-20220919232959983.png)
+
+#### **利用元数据配置快捷菜单**
+
+###### 元数据的meta-data标签除了前面说到的name属性和value属性，还拥有resource属性，该属性可指定一个XML文件，表示元数据想要的复杂信息保存于XML数据之中。 
+
+###### 利用元数据配置快捷菜单的步骤如下所示： 
+
+-  在res/values/strings.xml添加各个菜单项名称的字符串配置 
+
+- 创建res/xml/shortcuts.xml，在该文件中填入各组菜单项的快捷方式定义（每个菜单对应哪个活动页面）。 
+
+- 给activity节点注册元数据的快捷菜单配置。 
+
+```xml
+res/values/strings.xml
+<resources>
+    <string name="app_name">study03</string>
+    <string name="first_short">first</string>
+    <string name="first_long">邮件页面</string>
+    <string name="two_short">two</string>
+    <string name="two_long">登录</string>
+</resources>
+```
+
+new > res > xml > shortcuts.xml
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="first"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/first_short"
+        android:shortcutLongLabel="@string/first_long">
+        <intent
+           android:action="android.intent.action.VIEW"
+            android:targetPackage="com.zjgs.study03"
+            android:targetClass="com.zjgs.study03.MetaActivity" />
+        <categories android:name="android.shortcut.conversation"/>
+    </shortcut>
+    <shortcut
+        android:shortcutId="two"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/two_short"
+        android:shortcutLongLabel="@string/two_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.zjgs.study03"
+            android:targetClass="com.zjgs.study03.LoginInputActivity" />
+        <categories android:name="android.shortcut.conversation"/>
+    </shortcut>
+</shortcuts>
+```
+
+```xml
+<activity
+          android:name=".MetaActivity"
+          android:exported="true"
+          android:launchMode="standard">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+    <meta-data android:name="email" android:value="邮件页面"/>
+    
+    <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+</activity>
+```
 
